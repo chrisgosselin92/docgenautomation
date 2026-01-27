@@ -6,7 +6,8 @@ This is an early working prototype focused on:
 ·	Variable management (per client and bulk)
 ·	Template-driven document generation (in progress)
 ·	Importing variables from document templates
-Features (Current)
+
+**Features (Current)**
 ·	Add and list clients (stored in SQLite)
 ·	Manage client-specific variables
 ·	Bulk-create variables across clients
@@ -14,7 +15,10 @@ Features (Current)
 ·	Export client list to Excel
 ·	Generate documents from templates (early version)
 ·	Tkinter-based GUI (no web dependencies)
-Project Structure
+
+**Project Structure**
+
+```text
 docgenautomation/
 ├── main.py                # Main GUI entry point
 ├── run.py                 # Bootstraps venv, installs deps, runs app
@@ -30,6 +34,7 @@ docgenautomation/
 │   └── clients.db
 ├── templates/             # Word templates (.docx)
 └── venv/                  # Virtual environment (ignored by git)
+```
 
 ## Requirements
 ·	Python 3.11+
