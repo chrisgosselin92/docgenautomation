@@ -20,19 +20,20 @@ This is an early working prototype focused on:
 
 ```text
 docgenautomation/
-├── main.py                # Main GUI entry point
-├── run.py                 # Bootstraps venv, installs deps, runs app
-├── db.py                  # Database setup and queries
-├── docgen.py              # Document generation logic
-├── variables.py           # Bulk variable utilities
-├── importvariables.py     # Import variables from templates
-├── listclients.py         # Export clients to Excel
-├── updateclient.py        # Client update helpers
-├── requirements.txt
-├── README.md
 ├── data/
 │   └── clients.db
-├── templates/             # Word templates (.docx)
+├── modules/
+│   └── main.py                # Main GUI entry point
+│   └── db.py                  # Database setup and queries
+│   └── docgen.py              # Document generation logic
+│   └── variables.py           # Bulk variable utilities
+│   └── importvariables.py     # Import variables from templates
+│   └── listclients.py         # Export clients to Excel
+│   └── updateclient.py        # Client update helpers
+├── run.py                 # Bootstraps venv, installs deps, runs app
+├── requirements.txt
+├── README.md
+├── templates/             # Word templates (.docx); tree won't be updated.
 └── venv/                  # Virtual environment (ignored by git)
 ```
 
