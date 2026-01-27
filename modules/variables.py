@@ -1,4 +1,4 @@
-from db import set_client_variable
+from modules.db import set_client_variable
 
 def bulk_add_variables(client_ids, var_names, default_value=None):
     """Add/update multiple variables for multiple clients."""

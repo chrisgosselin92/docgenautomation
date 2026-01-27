@@ -6,7 +6,7 @@ from datetime import datetime
 import os
 import platform
 import subprocess
-from db import DB_PATH
+from modules.db import DB_PATH
 
 def export_clients_to_excel():
     # Connect to DB and get clients

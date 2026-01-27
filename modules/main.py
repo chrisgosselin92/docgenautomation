@@ -1,10 +1,10 @@
 import tkinter as tk
 from tkinter import simpledialog, messagebox, filedialog
-from db import create_db, create_variables_table, add_client, list_clients, get_client_variables, set_client_variable
-from variables import bulk_add_variables
-from docgen import generate_documents, select_client
-from importvariables import import_variables
-from listclients import export_clients_to_excel
+from modules.db import create_db, create_variables_table, add_client, list_clients, get_client_variables, set_client_variable
+from modules.variables import bulk_add_variables
+from modules.docgen import generate_documents, select_client
+from modules.importvariables import import_variables
+from modules.listclients import export_clients_to_excel
 
 def main():
     create_db()
@@ -12,7 +12,7 @@ def main():
 
     root = tk.Tk()
     root.title("LegalDocGenerator")
-    root.geometry("600x800")
+    root.geometry("500x550")
 
     # --- Button callbacks ---
     def on_add_client():

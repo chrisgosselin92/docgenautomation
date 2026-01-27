@@ -2,7 +2,7 @@
 from tkinter import filedialog, messagebox
 from docx import Document
 import re
-from db import list_clients, set_client_variable, get_client_variables
+from modules.db import list_clients, set_client_variable, get_client_variables
 
 def import_variables(root):
     # --- Select a document file ---

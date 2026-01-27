@@ -2,7 +2,7 @@
 import tkinter as tk
 from tkinter import messagebox, simpledialog
 from pathlib import Path
-from db import list_clients, get_client_variables  # assuming you have db.py for DB functions
+from modules.db import list_clients, get_client_variables  # assuming you have db.py for DB functions
 
 def select_client(clients):
     selected_id = tk.IntVar()
