@@ -1,4 +1,4 @@
-# LegalDocGenerator (v0.0.1)
+# LegalDocGenerator (v0.0.3)
 **A local desktop application for managing legal clients, variables, and generating document templates from stored data.**
 
 This is an early working prototype focused on:
