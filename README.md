@@ -25,11 +25,13 @@ docgenautomation/
 ├── modules/
 │   └── main.py                # Main GUI entry point
 │   └── db.py                  # Database setup and queries
+│   └── dbsync.py              # One way sync of db variables, variable types, descriptions onto the intake.xlsx
+│   └── admin.py               # For modifying the db
 │   └── docgen.py              # Document generation logic
+│   └── intake.py              # For launching excel (if no client there) or saving from excel into db
 │   └── variables.py           # Bulk variable utilities
-│   └── importvariables.py     # Import variables from templates
+│   └── updateclient.py        # Modifying clients by variable checkbox selection
 │   └── listclients.py         # Export clients to Excel
-│   └── updateclient.py        # Client update helpers
 ├── run.py                 # Bootstraps venv, installs deps, runs app
 ├── requirements.txt
 ├── README.md
