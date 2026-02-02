@@ -143,7 +143,7 @@ def main():
         ("Import Client / Matter Data", on_import_intake),
         ("Update/Delete Client", update_client),
         ("Export Clients", export_clients_to_excel),
-        ("Admin", open_admin),
+        ("Update Variables & Relations", open_admin),
         ("Exit", root.destroy),
     ]
 

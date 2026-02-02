@@ -62,9 +62,10 @@ def export_clients_to_excel():
 
     # Output file
     timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
-    downloads = Path.home() / "Downloads"
-    downloads.mkdir(exist_ok=True)
-    file_path = downloads / f"clients_{timestamp}.xlsx"
+    output_dir = Path.cwd() / "output_documents"
+    output_dir.mkdir(exist_ok=True)
+    file_path = output_dir / f"clients_{timestamp}.xlsx"
+
 
     df.to_excel(file_path, index=False)
 

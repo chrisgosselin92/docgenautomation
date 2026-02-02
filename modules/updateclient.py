@@ -142,7 +142,17 @@ def update_client():
         if cancelled or client_id is None:
             return
 
+        # Load all base variables for this client
         client_vars = get_all_variables_for_client("client", client_id)
+
+        # --- Compute derived variables automatically ---
+        for var_meta in list_all_variable_meta():
+            if var_meta.get("is_derived"):
+                expr = var_meta.get("derived_expression")
+                try:
+                    client_vars[var_meta["var_name"]] = eval(expr, {}, client_vars)
+                except Exception:
+                    client_vars[var_meta["var_name"]] = ""  # fallback if evaluation fails
 
         window = tk.Toplevel()
         window.title(f"Update Client Variables — {build_client_label(client_id)}")
@@ -151,94 +161,68 @@ def update_client():
 
         tk.Label(
             window,
-            text="Edit variables or add new ones. All changes will be detected automatically.",
+            text="Edit variables or add new ones. Derived variables are computed automatically.",
             font=("Helvetica", 13),
         ).pack(pady=8)
 
+        # --- Search bar ---
         tk.Label(window, text="Search Variable:").pack()
         var_search = tk.StringVar()
         tk.Entry(window, textvariable=var_search, width=50).pack(pady=(0, 10))
 
-        table = tk.Frame(window)
-        table.pack(fill="both", expand=True, padx=10)
+        # --- Scrollable table setup ---
+        container = tk.Frame(window)
+        container.pack(fill="both", expand=True, padx=10, pady=5)
 
+        table_canvas = tk.Canvas(container)
+        table_frame = tk.Frame(table_canvas)
+        scrollbar = tk.Scrollbar(container, orient="vertical", command=table_canvas.yview)
+        table_canvas.configure(yscrollcommand=scrollbar.set)
+
+        table_canvas.pack(side="left", fill="both", expand=True)
+        scrollbar.pack(side="right", fill="y")
+        table_canvas.create_window((0, 0), window=table_frame, anchor="nw")
+
+        def resize_canvas(event):
+            table_canvas.configure(scrollregion=table_canvas.bbox("all"))
+
+        table_frame.bind("<Configure>", resize_canvas)
+
+        # --- Table headers ---
         headers = ["Variable", "Description", "Value"]
         widths = [25, 45, 25]
         for i, (h, w) in enumerate(zip(headers, widths)):
             tk.Label(
-                table,
+                table_frame,
                 text=h,
                 width=w,
                 font=("Helvetica", 10, "bold"),
                 anchor="w",
             ).grid(row=0, column=i, sticky="w")
 
-        # Build variable universe
         all_var_meta = list_all_variable_meta()
-        all_var_names = {m["var_name"] for m in all_var_meta}
-        all_var_names |= load_intake_variables()
         meta_lookup = {m["var_name"]: m for m in all_var_meta}
-
-        vars_by_category = {}
-        for var_name in sorted(all_var_names):
-            meta = meta_lookup.get(var_name) or {}
-            category = meta.get("category", "General")
-            vars_by_category.setdefault(category, []).append(var_name)
+        all_var_names = set(meta_lookup.keys()) | set(client_vars.keys())
 
         row_vars = {}
-        row_index = 1
+        for row_index, var_name in enumerate(sorted(all_var_names), start=1):
+            meta = meta_lookup.get(var_name) or {}
+            raw_val = client_vars.get(var_name, "")
+            value = raw_val.get("value") if isinstance(raw_val, dict) else raw_val or ""
 
-        for category in sorted(vars_by_category):
-            tk.Label(
-                table,
-                text=category,
-                font=("Helvetica", 10, "bold"),
-                anchor="w",
-            ).grid(row=row_index, column=0, columnspan=3, sticky="w", pady=(6, 2))
-            row_index += 1
+            val_var = tk.StringVar(value=value)
+            desc_var = tk.StringVar(value=meta.get("description", ""))
 
-            for var_name in vars_by_category[category]:
-                meta = meta_lookup.get(var_name) or {}
-                raw_val = client_vars.get(var_name)
-                value = raw_val.get("value") if isinstance(raw_val, dict) else (raw_val or "")
-                if isinstance(value, (dict, list, tuple)):
-                    value = ""
+            bg_color = "#e6f7ff" if meta.get("is_derived") else None
 
-                val_var = tk.StringVar(value=value)
-                desc_var = tk.StringVar(value=meta.get("description", ""))
+            tk.Label(table_frame, text=var_name, width=25, anchor="w", bg=bg_color).grid(row=row_index, column=0, sticky="w")
+            tk.Entry(table_frame, textvariable=desc_var, width=45, state="readonly", bg=bg_color).grid(row=row_index, column=1, sticky="w")
+            tk.Entry(table_frame, textvariable=val_var, width=25, bg=bg_color).grid(row=row_index, column=2, sticky="w")
 
-                tk.Label(table, text=var_name, width=25, anchor="w").grid(row=row_index, column=0, sticky="w")
-                tk.Entry(table, textvariable=desc_var, width=45, state="readonly").grid(row=row_index, column=1, sticky="w")
-                tk.Entry(table, textvariable=val_var, width=25).grid(row=row_index, column=2, sticky="w")
+            row_vars[var_name] = {"val": val_var, "desc": desc_var, "meta": meta}
 
-                row_vars[var_name] = {
-                    "val": val_var,
-                    "desc": desc_var,
-                    "meta": meta,
-                }
-
-                row_index += 1
-
-        # Apply updates with automatic change detection
+        # --- Apply updates function ---
         def apply_updates():
-            changed_vars = []
-            for var, info in row_vars.items():
-                new_val = info["val"].get().strip()
-                meta = info["meta"]
-                old_val = client_vars.get(var, "")
-                if isinstance(old_val, dict):
-                    old_val = old_val.get("value", "")
-                old_val = old_val or ""
-                if new_val != old_val:
-                    changed_vars.append((var, meta.get("description", ""), new_val))
-
-            if not changed_vars:
-                messagebox.showinfo("Update Client", "No changes detected.")
-                return
-            
-
-
-            # BEFORE showing confirmation window
             changed_vars = []
             for var, info in row_vars.items():
                 new_val = info["val"].get().strip()
@@ -250,13 +234,10 @@ def update_client():
                 if new_val != old_val:
                     changed_vars.append((var, meta.get("description", ""), new_val, old_val))
 
+            if not changed_vars:
+                messagebox.showinfo("Update Client", "No changes detected.")
+                return
 
-
-
-
-            # -------------------------------------------------
-            # Confirmation window with OLD values
-            # -------------------------------------------------
             confirm_win = tk.Toplevel()
             confirm_win.title("Confirm Changes")
             confirm_win.geometry("800x400")
@@ -269,7 +250,6 @@ def update_client():
 
             list_frame = tk.Frame(confirm_win)
             list_frame.pack(fill="both", expand=True, padx=10, pady=5)
-
             headers = ["Variable", "Description", "New Value", "Old Value"]
             for col, h in enumerate(headers):
                 tk.Label(list_frame, text=h, font=("Helvetica", 10, "bold")).grid(row=0, column=col, sticky="w", padx=2)
@@ -287,11 +267,11 @@ def update_client():
                     set_variable("client", client_id, var, val)
                 submitted.set(True)
                 confirm_win.destroy()
-                window.destroy()  # back to client selection menu
+                window.destroy()
 
             def cancel():
                 submitted.set(True)
-                confirm_win.destroy()  # back to editing
+                confirm_win.destroy()
 
             btn_frame = tk.Frame(confirm_win)
             btn_frame.pack(pady=10)
@@ -300,29 +280,13 @@ def update_client():
 
             confirm_win.wait_variable(submitted)
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+        # --- Bottom buttons in fixed frame ---
         btns = tk.Frame(window)
-        btns.pack(pady=10)
+        btns.pack(side="bottom", pady=10)
         tk.Button(btns, text="Apply Updates", command=apply_updates).pack(side="left", padx=5)
         tk.Button(btns, text="Delete Client", command=lambda: delete_client_workflow(client_id, window), fg="red").pack(side="left", padx=5)
         tk.Button(btns, text="Cancel", command=window.destroy).pack(side="left", padx=5)
+
 
         window.wait_window()
 

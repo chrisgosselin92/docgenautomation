@@ -11,3 +11,6 @@ requests==2.32.5
 
 # GUI calendar widget for Tkinter
 tkcalendar==1.6.1
+
+# Document templating
+docxtpl==0.20.2
