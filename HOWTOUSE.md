@@ -1,100 +1,162 @@
-# DocGenAutomation – User Guide
+### **HOWTOUSE.md**  
 
-## Version v0.0.3
+# LegalDocGenerator – How To Use (v0.0.4)
 
----
-
-## 0. Install
-If you have not installed the file yet, please view README.md first.  It is designed to run by launching launch.sh and should have all installers, dependencies, scripts, etc. for your operating system.
-
-## 1. Client Intake via Excel
-
-1. Open the provided `clients.xlsx` file.
-2. Navigate to the IntakeSheet (red tab)
-3. Entries in Column B correspond to variables in the system, e.g.:
-   - `clientfirstname`
-   - `clientlastname`
-   - `role` (plaintiff/defendant)
-   - Other custom variables.
-4. Fill in client information adjacent to the variable in column C and save the file. Close the file.
-
-**Tips:**
-- Keep variable names consistent with your system.
-- Do not use underscores if unsure — your admin UI can handle naming safely.
+This guide provides a detailed walkthrough of all features, with examples and explanations.
 
 ---
 
-## 2. Updating Clients
+## 1. Launching the App
+From the project root:
+```bash
+python run.py
+Automatically creates a virtual environment if missing
 
-1. Launch the application.
-2. Go to **Update/Delete Client**.
-3. Select your desired client.
-4. Then, search or scroll to locate a variable.
-5. Edit its value, type, category, or name.
-6. To delete a client, check the box on the bottom titled “Delete Client.”.
-7. Click **Save Changes** and confirm.
+Installs dependencies from requirements.txt
 
----
+Launches the GUI (Tkinter)
 
-## 3. Updating Variables
+No need to manually activate the venv
 
-1. Launch the application.
-2. Go to **Admin Panel → Variable Administration**.
-3. Search or scroll to locate a variable.
-4. Edit its value, type, category, or name.
-5. For deletions, check the box in the “Delete?” column.
-6. Click **Save Changes** and confirm.
+## 2. Client Management
+Add new clients via Main -> Add Client
 
----
+Edit existing clients via Main -> Update Client
 
-## 4. Creating Relationships & Derived Variables
+Export all clients to Excel using Main -> Export Clients
 
-1. In the Admin Panel, click **Derived Variable Builder**.
-2. Select the **first variable** (e.g., `clientfirstname`).
-3. Optionally select a **second variable** (e.g., `clientlastname`).
-4. Enter a **separator** (space `" "` by default).
-5. Choose a **role** (`plaintiff`, `defendant`, etc.).
-6. Enter a **name for the new variable** (e.g., `plaintiffcaption`).
-7. Click **Create** — the system will store this derived variable.
-8. Preview in the admin UI to verify.
+## 3. Variable Management
+Variables store client-specific information (e.g., client_name, case_type)
 
-Derived variables automatically combine base variables for each client. You can now use them in document generation.
+Manage via:
 
----
+Admin -> Edit Variables (bulk)
 
-## 5. Document Generation
+Client update dialogs (per client)
 
-1. Go to **Generate Documents** in the main UI.
-2. Select a client or set of clients.
-3. Choose a template Word document (`.docx`) or Outlook draft.
-4. The system replaces all variables with client-specific values:
-   - Standard variables (e.g., `clientfirstname`)  
-   - Derived variables (e.g., `plaintiffcaption`)  
-5. Output is a Word file or Outlook draft ready for review.
+Variable types:
 
----
+Standard: single value
 
-## 6. Tips & Best Practices
+Concatenated (_combo): combination of other variables
 
-- Use descriptive variable names for clarity.
-- Group related variables under a category in the admin panel.
-- When creating derived variables:
-  - Keep role assignments consistent.
-  - Use the preview table to verify correctness.
-- Always back up `clients.xlsx` before bulk changes.
-- Document templates should match variable names exactly.
+Derived (_derived): computed based on conditions (gender, pluralization, grammar)
 
----
+Dynamic: imported from dynamicpleadingresponses.xlsx using <<>> or [[]]
 
-## 7. Troubleshooting
+### 3a. Concatenated Variables
+Combine multiple existing variables with separators
 
-- **Variable missing in preview:** Ensure it exists in the admin panel.
-- **Derived variable not updating:** Check base variables are filled for the client.
-- **Document generation fails:** Confirm template file is `.docx` and contains matching placeholders.
+Example:
 
----
+clientfirstname + " " + clientlastname → clientfullname_combo
 
-## 8. Future Notes
+Built via editconcatvariable.py editor
 
-- Relationships could be extended to more complex cases (e.g., multiple defendants).
-- Derived variables can be nested (a derived variable can be a base for another derived variable).
+### 3b. Derived Variables
+Handle grammar and conditional text
+
+Examples:
+
+Pluralization: @standard-s_plural@ → "s" or ""
+
+Gendered pronouns: @he_she_they@, @his_her_their@, @him_her_them@
+
+Hard-coded; templates should use these brackets and @ symbols
+
+### 3c. Dynamic Variables
+Defined in dynamicpleadingresponses.xlsx
+
+Use <<variable>> in templates
+
+TRUE / FALSE mode (cell D1 of sheet):
+
+TRUE: one-time selection for entire doc
+
+FALSE: repeated selection until user marks "last paragraph"
+
+Example:
+
+In the District Court of <<venue>>, Nebraska
+User selects "Lancaster County" → inserted into document
+
+[[]] works like {{}} but supports numbered lists
+
+## 4. Document Generation
+Click Generate Documents
+
+Select clients (all or individually)
+
+Select templates to generate
+
+For missing variables:
+
+Prompted to input per client
+
+Or define new variables dynamically
+
+Generated documents saved to output_documents/ (ignored by git)
+
+## 5. Template & Variable Syntax
+
+Standard Variables
+{{client_name}}, {{case_type}}, {{court_date}}
+Grammar Variables
+Use parentheses () and @ symbols:
+
+(@clients@) state(@standard-s_plural@) that (@he_she_they@) (@is_are@) ready to vindicate (@his_her_their@) rights, support(@plural_s@) (@him_her_them@)
+Renders according to client gender and plurality
+
+List of grammar tokens:
+
+Token	Output Example
+@clients@	"client"/"clients"
+@standard-s_plural@	"s"/""
+@he_she_they@	"he"/"she"/"they"
+@is_are@	"is"/"are"
+@his_her_their@	"his"/"her"/"their"
+@him_her_them@	"him"/"her"/"them"
+@plural_s@	"s"/""
+Concatenated Variables
+Defined with _combo
+
+Prompted for component variables and separator
+
+Derived Variables
+Defined with _derived
+
+Automatically computed from database or rules
+
+Dynamic Variables
+Defined in Excel with <<>> or [[]]
+
+TRUE: single-use, FALSE: numbered list, repeat until last paragraph selected
+
+## 6. Examples
+
+**Example Template:**
+
+Dated this {{currentday}} of {{currentmonth}}, {{year}}.
+
+Dear {{clientfullname_combo}},
+
+My (@clients@) state(@standard-s_plural@) that (@he_she_they@) (@is_are@) ready to vindicate (@his_her_their@) rights.
+
+In the District Court of <<venue>>, Nebraska.
+
+Rendered for client John Doe (male):
+
+Dated this 2nd of February, 2026.
+
+Dear John Doe,
+
+My client states that he is ready to vindicate his rights.
+
+In the District Court of Lancaster County, Nebraska.
+
+## 7. Notes
+Rough edges exist; rapid iteration expected
+
+Focused on correctness of variable substitution and document generation
+
+Output documents are ignored in Git; do not commit them
