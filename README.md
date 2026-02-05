@@ -56,7 +56,8 @@ docgenautomation/
 ├── dynamicpleadingresponses.xlsx
 ├── intake.xlsx
 └── attorney_input.xlsx
-```
+
+text```
 
 
 ## Quick Start
