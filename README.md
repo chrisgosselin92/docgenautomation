@@ -27,6 +27,9 @@ This project is intended for local desktop use and does **not** require a web se
 
 ## Project Structure
 
+## Project Structure
+
+```text
 docgenautomation/
 ├── data/
 │   └── clients.db
@@ -34,7 +37,7 @@ docgenautomation/
 │   ├── main.py                 # Main GUI entry point
 │   ├── db.py                   # Database queries and setup
 │   ├── dbsync.py               # Sync variables with intake.xlsx
-│   ├── admin.py                # Admin DB modifications
+│   ├── admin.py                 # Admin DB modifications
 │   ├── admin_attorney.py       # Admin for attorney users
 │   ├── docgen.py               # Document generation
 │   ├── editconcatvariable.py   # Concatenated variable editor
@@ -54,7 +57,7 @@ docgenautomation/
 ├── launch.sh
 ├── dynamicpleadingresponses.xlsx
 ├── intake.xlsx
-└── attorney_input.xlsx
+└── attorney_input.xlsx```
 
 
 ## Quick Start
