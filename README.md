@@ -1,4 +1,4 @@
-# LegalDocGenerator (v0.0.3)
+# LegalDocGenerator (v0.0.4)
 **A local desktop application for managing legal clients, variables, and generating document templates from stored data.**
 
 This is an early working prototype focused on:
@@ -62,7 +62,7 @@ No manual activation of the virtual environment is required.
 * If a variable is missing for a client, the system will prompt or mark it as not defined.*
 
 ## Status
-**This is v0.0.1 — an initial working prototype.**
+**This is v0.0.4 — an initial working prototype.**
 Expect:
 ·	Rough edges
 ·	Rapid iteration

@@ -1,11 +1,10 @@
 # modules/main.py
 import tkinter as tk
-from tkinter import messagebox
 import subprocess
 import platform
-from pathlib import Path
 import openpyxl
-
+from pathlib import Path
+from tkinter import messagebox
 from modules.dbsync import run_startup_sync
 from modules.admin import open_admin
 from modules.intake import import_intake_for_client
@@ -123,42 +122,91 @@ def on_generate_documents():
 # Main GUI
 # -------------------------------------------------
 def main():
+    global root
     root = tk.Tk()
-    root.title("Document Automation Tool")
+    root.title("Document Generation System")
+    root.geometry("450x550")
 
-    if ICON_PATH.exists():
-        try:
-            root.iconphoto(True, tk.PhotoImage(file=str(ICON_PATH)))
-        except Exception:
-            pass
+    tk.Label(root, text="Document Generation System", font=("Arial", 16, "bold")).pack(pady=15)
 
-    pad_x = 40
-    pad_y = 15
-    wrap_len = 260
+    # Define ALL submenu functions AFTER root is created
+    def on_generate_submenu():
+        """Generate documents submenu"""
+        submenu = tk.Toplevel(root)
+        submenu.title("Generate Documents")
+        submenu.geometry("400x250")
+        submenu.grab_set()
+        
+        tk.Label(submenu, text="Generate Documents", font=("Arial", 14, "bold")).pack(pady=20)
+        
+        tk.Button(submenu, text="Generate Documents", command=lambda: [submenu.destroy(), on_generate_documents()], width=30).pack(pady=5)
+        tk.Button(submenu, text="Back to Main Menu", command=submenu.destroy, width=30).pack(pady=5)
 
-    tk.Label(root, text="Document Automation", font=("Helvetica", 22)).pack(pady=(15, pad_y))
+    def on_client_submenu():
+        """Add/Update Client submenu"""
+        submenu = tk.Toplevel(root)
+        submenu.title("Add or Update Client")
+        submenu.geometry("400x300")
+        submenu.grab_set()
+        
+        tk.Label(submenu, text="Add or Update Client", font=("Arial", 14, "bold")).pack(pady=20)
+        
+        tk.Button(submenu, text="Import from Intake Excel", command=lambda: [submenu.destroy(), on_import_intake()], width=30).pack(pady=5)
+        tk.Button(submenu, text="Update Client in DB", command=lambda: [submenu.destroy(), update_client()], width=30).pack(pady=5)
+        tk.Button(submenu, text="Export Clients to Excel", command=lambda: [submenu.destroy(), export_clients_to_excel()], width=30).pack(pady=5)
+        tk.Button(submenu, text="Back to Main Menu", command=submenu.destroy, width=30).pack(pady=5)
 
+    def on_attorney_submenu():
+        """Add/Update Opposing Counsel submenu"""
+        submenu = tk.Toplevel(root)
+        submenu.title("Add or Update Opposing Counsel")
+        submenu.geometry("400x250")
+        submenu.grab_set()
+        
+        tk.Label(submenu, text="Add or Update Opposing Counsel", font=("Arial", 14, "bold")).pack(pady=20)
+        
+        tk.Button(submenu, text="Add/Update Attorney in DB", 
+                 command=lambda: [submenu.destroy(), __import__('modules.admin_attorney', fromlist=['open_admin_attorney']).open_admin_attorney()], 
+                 width=30).pack(pady=5)
+        tk.Button(submenu, text="Back to Main Menu", command=submenu.destroy, width=30).pack(pady=5)
+
+    def on_tools_submenu():
+        """Tools submenu"""
+        submenu = tk.Toplevel(root)
+        submenu.title("Tools")
+        submenu.geometry("400x250")
+        submenu.grab_set()
+        
+        tk.Label(submenu, text="Tools", font=("Arial", 14, "bold")).pack(pady=20)
+        
+        tk.Button(
+            submenu,
+            text="Template Builder (Convert Documents)",
+            command=lambda: [submenu.destroy(), open_template_builder_tool()],
+            width=35
+        ).pack(pady=5)
+        
+        tk.Button(submenu, text="Back to Main Menu", command=submenu.destroy, width=35).pack(pady=5)
+
+    def open_template_builder_tool():
+        """Launch the template builder"""
+        from modules.template_builder import open_template_builder
+        open_template_builder(root)
+
+    # NOW define buttons list (after all functions are defined)
     buttons = [
-        ("Generate Document(s)", on_generate_documents),
-        ("Import Client / Matter Data", on_import_intake),
-        ("Update/Delete Client", update_client),
-        ("Export Clients", export_clients_to_excel),
+        ("Generate", on_generate_submenu),
+        ("Add or Update Client", on_client_submenu),
+        ("Add or Update Opposing Counsel", on_attorney_submenu),
+        ("Document Template Builder", on_tools_submenu),
         ("Update Variables & Relations", open_admin),
         ("Exit", root.destroy),
     ]
 
-    for text, cmd in buttons:
-        tk.Button(root, text=text, command=cmd, wraplength=wrap_len)\
-            .pack(padx=pad_x, pady=pad_y, fill="x")
+    # Create the buttons
+    for text, command in buttons:
+        tk.Button(root, text=text, command=command, width=30, height=2).pack(pady=8)
 
-    root.update_idletasks()
-
-    width = root.winfo_reqwidth() + pad_x
-    height = root.winfo_reqheight() + pad_y
-    x = (root.winfo_screenwidth() // 2) - (width // 2)
-    y = (root.winfo_screenheight() // 2) - (height // 2)
-
-    root.geometry(f"{width}x{height}+{x}+{y}")
     root.mainloop()
 
 

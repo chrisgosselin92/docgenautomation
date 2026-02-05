@@ -5,6 +5,154 @@ from pathlib import Path
 DB_PATH = Path("data/clients.db")
 
 # ---------------------------
+# Opposing Counsel Table
+# ---------------------------
+def ensure_opposing_counsel_table():
+    conn = sqlite3.connect(DB_PATH)
+    c = conn.cursor()
+    c.execute('''
+        CREATE TABLE IF NOT EXISTS opposing_counsel (
+            id INTEGER PRIMARY KEY,
+            first_name TEXT,
+            last_name TEXT,
+            email TEXT,
+            service_email TEXT,
+            address_street TEXT,
+            address_city TEXT,
+            address_state TEXT,
+            address_zip TEXT,
+            phone TEXT,
+            fax TEXT,
+            firm_name TEXT,
+            bar_number TEXT,
+            notes TEXT,
+            UNIQUE(first_name, last_name, firm_name)
+        )
+    ''')
+    conn.commit()
+    conn.close()
+
+
+def list_opposing_counsel():
+    ensure_opposing_counsel_table()
+    conn = sqlite3.connect(DB_PATH)
+    c = conn.cursor()
+    c.execute('SELECT id, first_name, last_name, email, service_email, address_street, address_city, address_state, address_zip, phone, fax, firm_name, bar_number, notes FROM opposing_counsel ORDER BY last_name, first_name')
+    rows = c.fetchall()
+    conn.close()
+    return rows
+
+
+def get_opposing_counsel(counsel_id):
+    ensure_opposing_counsel_table()
+    conn = sqlite3.connect(DB_PATH)
+    c = conn.cursor()
+    c.execute('SELECT id, first_name, last_name, email, service_email, address_street, address_city, address_state, address_zip, phone, fax, firm_name, bar_number, notes FROM opposing_counsel WHERE id=?', (counsel_id,))
+    row = c.fetchone()
+    conn.close()
+    return row
+
+
+def create_opposing_counsel(first_name, last_name, email=None, service_email=None, address_street=None, address_city=None, address_state=None, address_zip=None, phone=None, fax=None, firm_name=None, bar_number=None, notes=None):
+    ensure_opposing_counsel_table()
+    conn = sqlite3.connect(DB_PATH)
+    c = conn.cursor()
+    try:
+        c.execute('''
+            INSERT INTO opposing_counsel (first_name, last_name, email, service_email, address_street, address_city, address_state, address_zip, phone, fax, firm_name, bar_number, notes)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        ''', (first_name, last_name, email, service_email, address_street, address_city, address_state, address_zip, phone, fax, firm_name, bar_number, notes))
+        counsel_id = c.lastrowid
+        conn.commit()
+        conn.close()
+        return counsel_id
+    except sqlite3.IntegrityError:
+        conn.close()
+        return None
+
+
+def update_opposing_counsel(counsel_id, first_name, last_name, email=None, service_email=None, address_street=None, address_city=None, address_state=None, address_zip=None, phone=None, fax=None, firm_name=None, bar_number=None, notes=None):
+    ensure_opposing_counsel_table()
+    conn = sqlite3.connect(DB_PATH)
+    c = conn.cursor()
+    c.execute('''
+        UPDATE opposing_counsel
+        SET first_name=?, last_name=?, email=?, service_email=?, address_street=?, address_city=?, address_state=?, address_zip=?, phone=?, fax=?, firm_name=?, bar_number=?, notes=?
+        WHERE id=?
+    ''', (first_name, last_name, email, service_email, address_street, address_city, address_state, address_zip, phone, fax, firm_name, bar_number, notes, counsel_id))
+    conn.commit()
+    conn.close()
+
+
+def delete_opposing_counsel(counsel_id):
+    ensure_opposing_counsel_table()
+    conn = sqlite3.connect(DB_PATH)
+    c = conn.cursor()
+    c.execute("DELETE FROM opposing_counsel WHERE id=?", (counsel_id,))
+    conn.commit()
+    conn.close()
+
+
+def get_opposing_counsel_by_name(first_name, last_name, firm_name=None):
+    """Get opposing counsel by name"""
+    ensure_opposing_counsel_table()
+    conn = sqlite3.connect(DB_PATH)
+    c = conn.cursor()
+    
+    if firm_name:
+        c.execute('SELECT id, first_name, last_name, email, service_email, address_street, address_city, address_state, address_zip, phone, fax, firm_name, bar_number, notes FROM opposing_counsel WHERE first_name=? AND last_name=? AND firm_name=?', (first_name, last_name, firm_name))
+    else:
+        c.execute('SELECT id, first_name, last_name, email, service_email, address_street, address_city, address_state, address_zip, phone, fax, firm_name, bar_number, notes FROM opposing_counsel WHERE first_name=? AND last_name=?', (first_name, last_name))
+    
+    row = c.fetchone()
+    conn.close()
+    return row
+
+
+def get_opposing_counsel_variables(counsel_id):
+    """Get all variables for an opposing counsel by ID - returns lowercase keys"""
+    ensure_opposing_counsel_table()
+    row = get_opposing_counsel(counsel_id)
+    
+    if not row:
+        return {}
+    
+    # Build full name and full address
+    full_name = f"{row[1]} {row[2]}".strip()  # first_name + last_name
+    full_address = row[5] or ""  # address_street
+    city_state_zip = f"{row[6] or ''}, {row[7] or ''} {row[8] or ''}".strip().strip(',')
+    
+    # Return with LOWERCASE keys for normalization
+    return {
+        "plaintiffattorneyfirstname".lower(): row[1] or "",
+        "plaintiffattorneylastname".lower(): row[2] or "",
+        "plaintiffattorneyfullname".lower(): full_name,
+        "plaintiffattorneyemail".lower(): row[3] or "",
+        "plaintiffattorneyeserviceemail".lower(): row[4] or "",
+        "plaintifffirmaddress".lower(): full_address,
+        "plaintifffirmcity".lower(): row[6] or "",
+        "plaintifffirmst".lower(): row[7] or "",  # Lowercase!
+        "plaintifffirmzip".lower(): row[8] or "",
+        "plaintiffbusphone".lower(): row[9] or "",
+        "plaintifffaxphone".lower(): row[10] or "",
+        "plaintifffirmname".lower(): row[11] or "",
+        "plaintiffbarnumber".lower(): row[12] or "",
+        "plaintiffnotes".lower(): row[13] or "",
+        "plaintifffulladdress".lower(): f"{full_address}\n{city_state_zip}".strip(),
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+# ---------------------------
 # Database setup
 # ---------------------------
 def create_db():
@@ -13,13 +161,17 @@ def create_db():
     c = conn.cursor()
 
     c.execute('''
-        CREATE TABLE IF NOT EXISTS clients (
-            id INTEGER PRIMARY KEY,
-            first_name TEXT,
-            last_name TEXT,
-            birthday TEXT,
-            matterid TEXT UNIQUE
-        );
+    CREATE TABLE IF NOT EXISTS clients (
+        id INTEGER PRIMARY KEY,
+        first_name TEXT,
+        last_name TEXT,
+        birthday TEXT,
+        matterid TEXT UNIQUE,
+        opposing_counsel_id INTEGER,
+        gender TEXT,
+        defendant_count INTEGER DEFAULT 1,
+        FOREIGN KEY (opposing_counsel_id) REFERENCES opposing_counsel(id)
+    );
     ''')
 
     c.execute('''
@@ -46,11 +198,15 @@ def create_db():
         );
     ''')
 
+    conn.commit()  # ADD THIS
+    conn.close()   # ADD THIS
+    
     ensure_concat_table()
+    ensure_opposing_counsel_table()  
+    ensure_variable_meta_columns()
 
-    conn.commit()
-    conn.close()
 
+    
 
 def ensure_variable_meta_columns():
     conn = sqlite3.connect(DB_PATH)
@@ -69,6 +225,7 @@ def ensure_variable_meta_columns():
 
     conn.commit()
     conn.close()
+
 
 
 # ---------------------------

@@ -227,6 +227,7 @@ def open_admin():
     tk.Button(bottom_frame, text="Exit", command=win.destroy).pack(side="right", padx=5)
 
     # --- Populate variable list ---
+    # --- Populate variable list ---
     def populate_list(*_):
         for widget in scroll_frame.winfo_children():
             widget.destroy()
@@ -240,11 +241,61 @@ def open_admin():
         for cat, vars_in_cat in sorted(grouped.items()):
             header = tk.Label(scroll_frame, text=cat, font=("Helvetica", 10, "bold"), bg="#e0e0e0")
             header.pack(fill="x", pady=(5, 0))
+            
             for var in sorted(vars_in_cat, key=lambda v: v["var_name"].lower()):
-                label = f"  {var['var_name']}"
-                if term in label.lower():
-                    tk.Button(scroll_frame, text=label, anchor="w", relief="flat",
-                              command=lambda v=var: load_into_editor(v)).pack(fill="x", padx=2, pady=1)
+                label_text = f"  {var['var_name']}"
+                if term and term not in label_text.lower():
+                    continue
+                
+                # Create row frame for variable
+                row_frame = tk.Frame(scroll_frame)
+                row_frame.pack(fill="x", padx=2, pady=1)
+                
+                # Button to load variable (takes most of the space)
+                tk.Button(
+                    row_frame, 
+                    text=label_text, 
+                    anchor="w", 
+                    relief="flat",
+                    command=lambda v=var: load_into_editor(v)
+                ).pack(side="left", fill="x", expand=True)
+                
+                # Small delete button on the right
+                tk.Button(
+                    row_frame,
+                    text="🗑",
+                    width=3,
+                    bg="#f44336",
+                    fg="white",
+                    command=lambda v=var: delete_variable(v["var_name"])
+                ).pack(side="right", padx=2)
+    
+    def delete_variable(var_name):
+        """Delete a variable from the database"""
+        if not messagebox.askyesno(
+            "Confirm Delete",
+            f"Delete variable '{var_name}'?\n\n"
+            "This will:\n"
+            "• Remove the variable metadata\n"
+            "• Remove all values for this variable across ALL clients\n"
+            "• This action CANNOT be undone\n\n"
+            "Are you sure?",
+            parent=win
+        ):
+            return
+        
+        # Delete from variables_meta
+        conn = sqlite3.connect(DB_PATH)
+        c = conn.cursor()
+        c.execute("DELETE FROM variables_meta WHERE var_name=?", (var_name,))
+        # Delete all client values for this variable
+        c.execute("DELETE FROM variables WHERE var_name=?", (var_name,))
+        conn.commit()
+        conn.close()
+        
+        messagebox.showinfo("Deleted", f"Variable '{var_name}' has been deleted.", parent=win)
+        populate_list()
+        clear_editor()
 
     search_var.trace_add("write", populate_list)
     populate_list()

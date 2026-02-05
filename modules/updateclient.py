@@ -170,6 +170,67 @@ def update_client():
         var_search = tk.StringVar()
         tk.Entry(window, textvariable=var_search, width=50).pack(pady=(0, 10))
 
+
+        # --- Attorney Assignment Section ---
+        attorney_frame = tk.Frame(window)
+        attorney_frame.pack(fill="x", padx=10, pady=10)
+        
+        tk.Label(attorney_frame, text="Opposing Counsel:", font=("Helvetica", 11, "bold")).pack(side="left", padx=5)
+        
+        # Get current attorney assignment DIRECTLY from clients table
+        from modules.db import list_opposing_counsel
+        import sqlite3
+        from modules.db import DB_PATH
+        
+        # Read opposing_counsel_id directly from clients table
+        conn = sqlite3.connect(DB_PATH)
+        c = conn.cursor()
+        c.execute("SELECT opposing_counsel_id FROM clients WHERE id=?", (client_id,))
+        row = c.fetchone()
+        conn.close()
+        
+        current_counsel_id = row[0] if row and row[0] else None
+        
+        attorneys = list_opposing_counsel()
+        attorney_options = ["(None)"] + [f"{row[1]} {row[2]} - {row[11] or 'No Firm'}" for row in attorneys]
+        attorney_ids = [None] + [row[0] for row in attorneys]
+        
+        selected_attorney_idx = 0
+        if current_counsel_id:
+            try:
+                selected_attorney_idx = attorney_ids.index(int(current_counsel_id))
+            except (ValueError, TypeError):
+                pass
+        
+        attorney_var = tk.StringVar(value=attorney_options[selected_attorney_idx])
+        attorney_dropdown = tk.OptionMenu(attorney_frame, attorney_var, *attorney_options)
+        attorney_dropdown.config(width=40)
+        attorney_dropdown.pack(side="left", padx=5)
+        
+        def save_attorney_assignment():
+            selected_name = attorney_var.get()
+            selected_idx = attorney_options.index(selected_name)
+            selected_id = attorney_ids[selected_idx]
+            
+            conn = sqlite3.connect(DB_PATH)
+            c = conn.cursor()
+            
+            if selected_id:
+                c.execute("UPDATE clients SET opposing_counsel_id = ? WHERE id = ?", (selected_id, client_id))
+                conn.commit()
+                conn.close()
+                messagebox.showinfo("Success", "Opposing counsel assigned!", parent=window)
+            else:
+                c.execute("UPDATE clients SET opposing_counsel_id = NULL WHERE id = ?", (client_id,))
+                conn.commit()
+                conn.close()
+                messagebox.showinfo("Success", "Opposing counsel removed!", parent=window)
+        
+        tk.Button(attorney_frame, text="Assign Attorney", command=save_attorney_assignment).pack(side="left", padx=5)
+
+
+
+
         # --- Scrollable table setup ---
         container = tk.Frame(window)
         container.pack(fill="both", expand=True, padx=10, pady=5)
