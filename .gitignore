@@ -1,3 +1,13 @@
+# Documents
+output_documents/
+
+# LibreOffice / Word temp files
+.~lock.*
+
+# Temporary scripts
+tempstuff/
+
+# OS files
 venv/
 __pycache__/
 *.pyc
