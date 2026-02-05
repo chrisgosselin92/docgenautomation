@@ -55,7 +55,7 @@ docgenautomation/
 ├── launch.sh
 ├── dynamicpleadingresponses.xlsx
 ├── intake.xlsx
-└── attorney_input.xlsx
+└── attorney_input.xlsx```
 
 
 ## Quick Start
