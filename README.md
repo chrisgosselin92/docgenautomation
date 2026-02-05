@@ -27,35 +27,34 @@ This project is intended for local desktop use and does **not** require a web se
 
 ## Project Structure
 
-```text
-docgenautomation/
-├── data/
-│   └── clients.db
-├── modules/
-│   ├── main.py                 # Main GUI entry point
-│   ├── db.py                   # Database queries and setup
-│   ├── dbsync.py               # Sync variables with intake.xlsx
-│   ├── admin.py                # Admin DB modifications
-│   ├── admin_attorney.py       # Admin for attorney users
-│   ├── docgen.py               # Document generation
-│   ├── editconcatvariable.py   # Concatenated variable editor
-│   ├── intake.py               # Excel intake and client import
-│   ├── listclients.py          # Export client list to Excel
-│   ├── updateclient.py         # Bulk client variable updates
-│   ├── variables.py            # Bulk variable utilities
-│   ├── bracket_variables.py    # Grammar / bracket variable logic
-│   ├── grammar.py              # Derived variable / grammar adjustments
-│   └── template_builder.py     # Dynamic variables & template processing
-├── templates/                  # Word templates (.docx)
-├── tempstuff/                  # Temporary scripts
-├── run.py                      # Bootstraps venv, installs dependencies, runs GUI
-├── requirements.txt
-├── README.md
-├── HOWTOUSE.md
-├── launch.sh
-├── dynamicpleadingresponses.xlsx
-├── intake.xlsx
-└── attorney_input.xlsx```
+```docgenautomation/
+```├── data/
+```│   └── clients.db
+```├── modules/
+```│   ├── main.py                 # Main GUI entry point
+```│   ├── db.py                   # Database queries and setup
+```│   ├── dbsync.py               # Sync variables with intake.xlsx
+```│   ├── admin.py                # Admin DB modifications
+```│   ├── admin_attorney.py       # Admin for attorney users
+```│   ├── docgen.py               # Document generation
+```│   ├── editconcatvariable.py   # Concatenated variable editor
+```│   ├── intake.py               # Excel intake and client import
+```│   ├── listclients.py          # Export client list to Excel
+```│   ├── updateclient.py         # Bulk client variable updates
+```│   ├── variables.py            # Bulk variable utilities
+```│   ├── bracket_variables.py    # Grammar / bracket variable logic
+```│   ├── grammar.py              # Derived variable / grammar adjustments
+```│   └── template_builder.py     # Dynamic variables & template processing
+```├── templates/                  # Word templates (.docx)
+```├── tempstuff/                  # Temporary scripts
+```├── run.py                      # Bootstraps venv, installs dependencies, runs GUI
+```├── requirements.txt
+```├── README.md
+```├── HOWTOUSE.md
+```├── launch.sh
+```├── dynamicpleadingresponses.xlsx
+```├── intake.xlsx
+```└── attorney_input.xlsx
 
 
 ## Quick Start
