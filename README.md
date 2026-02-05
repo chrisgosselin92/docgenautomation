@@ -54,7 +54,7 @@ This project is intended for local desktop use and does **not** require a web se
 ```├── launch.sh
 ```├── dynamicpleadingresponses.xlsx
 ```├── intake.xlsx
-```└── attorney_input.xlsx
+```└── attorney_input.xlsx```
 
 
 ## Quick Start
