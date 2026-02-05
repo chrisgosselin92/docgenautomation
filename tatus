@@ -1,0 +1,48 @@
+[33mtag v0.0.4[m
+Tagger: Christian Gosselin <chrisgosselin92@gmail.com>
+Date:   Thu Feb 5 11:27:02 2026 -0600
+
+v0.0.4: stable baseline before advanced docgen features
+
+[33mcommit 29674d12d6270565f76a8f6dbbd2a4ef72312007[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m, [m[1;33mtag: [m[1;33mv0.0.4[m[33m, [m[1;31morigin/main[m[33m)[m
+Author: Christian Gosselin <chrisgosselin92@gmail.com>
+Date:   Thu Feb 5 11:26:32 2026 -0600
+
+    Stop tracking generated output documents
+
+[1mdiff --git a/output_documents/DOC - Answer (substantive)_client1_20260204_182624.docx b/output_documents/DOC - Answer (substantive)_client1_20260204_182624.docx[m
+[1mdeleted file mode 100644[m
+[1mindex 64595a6..0000000[m
+Binary files a/output_documents/DOC - Answer (substantive)_client1_20260204_182624.docx and /dev/null differ
+[1mdiff --git a/output_documents/DOC - Answer (substantive)_client1_20260204_184147.docx b/output_documents/DOC - Answer (substantive)_client1_20260204_184147.docx[m
+[1mdeleted file mode 100644[m
+[1mindex aa15002..0000000[m
+Binary files a/output_documents/DOC - Answer (substantive)_client1_20260204_184147.docx and /dev/null differ
+[1mdiff --git a/output_documents/DOC - Answer (substantive)_client1_20260204_231228.docx b/output_documents/DOC - Answer (substantive)_client1_20260204_231228.docx[m
+[1mdeleted file mode 100644[m
+[1mindex cf3283d..0000000[m
+Binary files a/output_documents/DOC - Answer (substantive)_client1_20260204_231228.docx and /dev/null differ
+[1mdiff --git a/output_documents/DOC - Answer (substantive)_client1_20260205_063942.docx b/output_documents/DOC - Answer (substantive)_client1_20260205_063942.docx[m
+[1mdeleted file mode 100644[m
+[1mindex 13ec961..0000000[m
+Binary files a/output_documents/DOC - Answer (substantive)_client1_20260205_063942.docx and /dev/null differ
+[1mdiff --git a/output_documents/DOC - Answer (substantive)_client1_20260205_064640.docx b/output_documents/DOC - Answer (substantive)_client1_20260205_064640.docx[m
+[1mdeleted file mode 100644[m
+[1mindex 9998691..0000000[m
+Binary files a/output_documents/DOC - Answer (substantive)_client1_20260205_064640.docx and /dev/null differ
+[1mdiff --git a/output_documents/DOC - test document (singular) (supplemented)_client1_20260204_184110.docx b/output_documents/DOC - test document (singular) (supplemented)_client1_20260204_184110.docx[m
+[1mdeleted file mode 100644[m
+[1mindex 0f2f735..0000000[m
+Binary files a/output_documents/DOC - test document (singular) (supplemented)_client1_20260204_184110.docx and /dev/null differ
+[1mdiff --git a/output_documents/DOC - test document (singular) (supplemented)_client1_20260204_184225.docx b/output_documents/DOC - test document (singular) (supplemented)_client1_20260204_184225.docx[m
+[1mdeleted file mode 100644[m
+[1mindex 16cf029..0000000[m
+Binary files a/output_documents/DOC - test document (singular) (supplemented)_client1_20260204_184225.docx and /dev/null differ
+[1mdiff --git a/output_documents/DOC - test document (singular) (supplemented)_client1_20260205_063617.docx b/output_documents/DOC - test document (singular) (supplemented)_client1_20260205_063617.docx[m
+[1mdeleted file mode 100644[m
+[1mindex 0b5e1c3..0000000[m
+Binary files a/output_documents/DOC - test document (singular) (supplemented)_client1_20260205_063617.docx and /dev/null differ
+[1mdiff --git a/output_documents/DOC - test document (singular)_client1_20260205_111948.docx b/output_documents/DOC - test document (singular)_client1_20260205_111948.docx[m
+[1mdeleted file mode 100644[m
+[1mindex dd92737..0000000[m
+Binary files a/output_documents/DOC - test document (singular)_client1_20260205_111948.docx and /dev/null differ
