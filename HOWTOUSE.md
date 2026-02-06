@@ -7,6 +7,8 @@ This guide provides a detailed walkthrough of all features, with examples and ex
 ---
 
 ## 1. Launching the App
+Navigate to the directory where you cloned this repository, i.e. open that folder from your command prompt/CLI and run ```./launch.sh``` or ```python run.py```
+
 From the project root:
 ```bash
 python run.py
