@@ -10,7 +10,8 @@ This guide provides a detailed walkthrough of all features, with examples and ex
 From the project root:
 ```bash
 python run.py
-bash```
+```bash
+
 Automatically creates a virtual environment if missing
 
 Installs dependencies from requirements.txt
